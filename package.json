@@ -1,0 +1,17 @@
+{
+  "name": "whatsapp-discord-bot",
+  "version": "1.0.0",
+  "description": "Bot para integrar mensagens entre WhatsApp e Discord",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "discord.js": "^14.15.3",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.23.0"
+  }
+}
