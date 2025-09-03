@@ -1,4 +1,5 @@
 // index.js
+require('dotenv').config();
 const { Client, GatewayIntentBits, AttachmentBuilder } = require('discord.js');
 const { Client: WppClient, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
@@ -27,11 +28,11 @@ wppClient.on('disconnected', reason => console.error('⚠️ Desconectado:', rea
 
 discordClient.on('messageCreate', async message => {
     // Ignora bots e canais que não interessam
-    if (message.author.bot || message.channelId !== "1410828638063956078") return;
+    if (message.author.bot || message.channelId !== process.env.DISCORD_CHANNEL_ORIGEM) return;
 
     try {
-        const chatWhatsApp = await wppClient.getChatById("120363421263663727@g.us");
-        const discordChannelDestino = discordClient.channels.cache.get("1403438048129060904");
+        const chatWhatsApp = await wppClient.getChatById(process.env.WHATSAPP_CHAT_DESTINO);
+        const discordChannelDestino = discordClient.channels.cache.get(process.env.DISCORD_CHANNEL_DESTINO);
 
         // Envia anexos se existirem
         if (message.attachments.size > 0) {
@@ -44,7 +45,7 @@ discordClient.on('messageCreate', async message => {
                 // Envia para outro canal do Discord
                 await discordChannelDestino.send({
                     content: message.content || '',
-                    files: [attachment.url] // usa a URL direto pro Discord
+                    files: [attachment.url]
                 });
             }
         } else {
@@ -62,11 +63,11 @@ discordClient.on('messageCreate', async message => {
 
 wppClient.on('message', async msg => {
     // Só processa mensagens de um grupo específico
-    if (msg.from !== "120363400704097271@g.us") return;
+    if (msg.from !== process.env.WHATSAPP_CHAT_ORIGEM) return;
 
     try {
-        const discordChannel = discordClient.channels.cache.get("1403438048129060904");
-        const chatWhatsApp = await wppClient.getChatById("120363421263663727@g.us");
+        const discordChannel = discordClient.channels.cache.get(process.env.DISCORD_CHANNEL_DESTINO);
+        const chatWhatsApp = await wppClient.getChatById(process.env.WHATSAPP_CHAT_DESTINO);
         const content = msg.body || '';
 
         // Envia para o Discord
@@ -102,5 +103,5 @@ wppClient.on('message', msg => {
     console.log(`Mensagem recebida de: ${msg.from}`);
 });
 
-discordClient.login("MTQxMDc5OTEzNDU1Nzk5OTIzOA.Gc-Zvq.i8zr-IjsR2VY9o0MU8UPgDeDot0Jud3sd68QdY");
+discordClient.login(process.env.DISCORD_TOKEN);
 wppClient.initialize();
